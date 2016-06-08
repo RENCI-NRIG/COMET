@@ -27,6 +27,8 @@ import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Set;
 
+import org.codehaus.jettison.json.JSONObject;
+
 /**
  * Interface to run  administrative operations against COMET
  */
@@ -46,20 +48,20 @@ public interface COMETAdminIfce {
 	 * @param authorizations List of labels/tokens for this user
 	 * @return username if succesfull, error message if not.
 	 */
-	public String addUser(String username, String password, List<ByteBuffer> authorizations);
+	public JSONObject addUser(String username, String password, List<ByteBuffer> authorizations);
 	/**
 	 * Set authorization labels for user. This method overwrite existing authorization labels
 	 * @param username
 	 * @param authoriations
 	 * @return username if succesful, error message if not
 	 */
-	public String setAuthorizations(String username, List<ByteBuffer> authoriations);
+	public JSONObject setAuthorizations(String username, List<ByteBuffer> authoriations);
 	/**
 	 * Enumerate authorization labels associated with this user
 	 * @param username
 	 * @return List of authorization labels (ByteBuffer)
 	 */
-	public List<ByteBuffer> getVisibilityLabelByteBuffer(String username);
+	public JSONObject getVisibilityLabelByteBuffer(String username);
 	/**
 	 * Remove user from COMET service. This method does not modify data created by this user and possible inaccessible in the future. Additional administrative operations needed.
 	 * @param username
@@ -70,21 +72,23 @@ public interface COMETAdminIfce {
 	 * Enumerate existing users in COMET. This only enumerate their usernames
 	 * @return
 	 */
-	public Set<String> enumerateUsers();
+	public JSONObject enumerateUsers();
 	/**
 	 * Remove one authorization label from an existing user
 	 * @param username
+	 * @param password
 	 * @param authorizatoin label
 	 * @return username if succesful, 
 	 */
-	public String removeAuthorization(String username, ByteBuffer label);
+	public JSONObject removeAuthorization(String username, ByteBuffer label);
 	/**
 	 * Add authorization label(s) to username
 	 * @param username
+	 * @param password
 	 * @param authorizations
 	 * @return username if successful, error message if not.
 	 */
-	public String addAuthorizations(String username, List<ByteBuffer> authorizations);
+	public JSONObject addAuthorizations(String username, List<ByteBuffer> authorizations);
 	/**
 	 * Grant table permission to user. After created a user has
 	 * @param tableName

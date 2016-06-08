@@ -99,8 +99,8 @@ public class COMETGenCImpl implements COMETGenCIfce {
 
 	@SuppressWarnings({ "deprecation"})
 	public void init(String username, String password)
-			throws AccumuloException, AccumuloSecurityException,
-			TableExistsException {
+			throws AccumuloException, AccumuloSecurityException
+			 {
 
 		Properties props = null;
 		this.username=username;
@@ -188,6 +188,14 @@ public class COMETGenCImpl implements COMETGenCIfce {
 	public COMETGenCImpl(String configurationFile) {
 		/*Configuration property file*/
 		configFile = configurationFile;
+	}
+	
+	public Connector getConnector() {
+		return this.cometConnector;
+	}
+	
+	public ClientConfiguration getClientConfig() {
+		return this.clientConf;
 	}
 
 	public String deleteAllRowsInTable(String contextType) {
@@ -402,7 +410,7 @@ public class COMETGenCImpl implements COMETGenCIfce {
 		}
 
 		COMETAdminImpl adminOps = new COMETAdminImpl(root, rootPassword, cometConnector, clientConf);
-		List<ByteBuffer> list = adminOps.getVisibilityLabelByteBuffer(username);
+		List<ByteBuffer> list = adminOps.getVisibilityLabelByteBufferList(username);
 		try {
 			byte[] b = labelUser.getBytes("UTF-8");
 			byte[] b2 = labelProvider.getBytes("UTF-8");
@@ -467,7 +475,7 @@ public class COMETGenCImpl implements COMETGenCIfce {
 			return validated;
 		}
 		COMETAdminImpl adminOps = new COMETAdminImpl(root, rootPassword, cometConnector, clientConf);
-		List<ByteBuffer> list = adminOps.getVisibilityLabelByteBuffer(username);
+		List<ByteBuffer> list = adminOps.getVisibilityLabelByteBufferList(username);
 
 		for (ByteBuffer byteBuffer : list) {
 			try {
@@ -511,7 +519,7 @@ public class COMETGenCImpl implements COMETGenCIfce {
 		}
 
 		COMETAdminImpl adminOps = new COMETAdminImpl(root, rootPassword, cometConnector, clientConf);
-		List<ByteBuffer> list = adminOps.getVisibilityLabelByteBuffer(username);
+		List<ByteBuffer> list = adminOps.getVisibilityLabelByteBufferList(username);
 
 		for (ByteBuffer byteBuffer : list) {
 			try {
