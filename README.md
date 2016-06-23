@@ -1,4 +1,4 @@
-# COMET
+# COMET Query Layer
 ##Synopsis
 
 COMET is a distributed meta-data service which stores key-value oriented configuration information about resources and applications running in the distributed cloud. Clients of COMET are elements of IaaS cloud provider system, user client tools, applications running in tenant virtual systems/slices. COMET provides strong authorization controls ensuring that information is only shared with appropriate clients.  
@@ -63,9 +63,10 @@ Similar for ‘reservation-owner’ attribute and reservation.user context
 - Principal carrying ‘speaks-for(Z)’ attribute attested to by slice owner identified as Z can perform same operations as slice owner on any scope in any context as Z. 
 
 
-##Motivation
+## Architecture
 
-##Installation
+
+##Deployment
 
 ##API Reference
 
