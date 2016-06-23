@@ -1,4 +1,4 @@
-:q!#!/usr/bin/python
+#!/usr/bin/python
 
 import threading
 import time
