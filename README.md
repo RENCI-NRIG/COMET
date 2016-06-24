@@ -62,21 +62,38 @@ Similar for ‘reservation-owner’ attribute and reservation.user context
 
 - Principal carrying ‘speaks-for(Z)’ attribute attested to by slice owner identified as Z can perform same operations as slice owner on any scope in any context as Z. 
 
+## RESTful API (Curl examples)
+
+
+### Createscope
+curl -k  -E /Users/charlie/curlcert.pfx:password https://hostname:8443/comet-accu/rest/comet/createscope  --data "contextType=reservations&contextSubType=iaas&scopeName=scopeName&scopeValue=scopeValue&visibility=secret&username=charlie&password=mypass&contextID=contextID"
+
+### Readscope
+curl -k -E /Users/charlie/curlcert.pfx:password https://hostname:8443/comet-accu/rest/comet/readscope --data "contextType=reservations&contextSubType=iaas&scopeName=${scopeName}&visibility=secret&username=charlie&password=mypass"
+
+### Updatescope
+
+curl -k -E /Users/charlie/curlcert.pfx:password https://hostname:8443/comet-accu/rest/comet/modifyscope --data "contextType=reservations&contextSubType=iaas&scopeValue=scopeValue&scopeName=scopeName&username=charlie&password=mypass&visibility=secret&contextID=contextID"
+
+### Destroyscope
+curl -k -E /Users/charlie/curlcert.pfx:password https://hostname:8443/comet-accu/rest/comet/destroyscope --data "contextType=virtualsystems&contextID=contextID&scopeName=scopeName&username=charlie&password=mypass&contextSubType=iaas&visibility=secret"
+
+### Enumeratescopes
+curl -k -E /Users/charlie/curlcert.pfx:password https://hostname:8443/comet-accu/rest/comet/enumeratescopes --data
+"contextType=virtualsystems&contextID=contextID&username=charlie&password=mypass&contextSubType=iaas&visibility=secret"
 
 ## Architecture
-
+Soon.
 
 ##Deployment
-
-##API Reference
+COMET query layer is implemented using Jersey REStful Webservices Framework 2.12. The Jersey application is packaged as a .war file and deployed to a Servlet container.  WE have used Tomcat 8.0. 
 
 ##Contributors
-Most of the requirements of this service have been specified by @ibaldin
+Most of the requirements of this service have been specified by @ibaldin. Design and development contributed by @clarisca.
+
 ##License
 /*
 * Copyright (c) 2016 RENCI/UNC Chapel Hill 
-*
-* @author Claris Castillo
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
 * and/or hardware specification (the "Work") to deal in the Work without restriction, including 
