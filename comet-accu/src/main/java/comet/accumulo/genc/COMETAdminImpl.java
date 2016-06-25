@@ -72,6 +72,42 @@ public class COMETAdminImpl implements COMETAdminIfce{
 		securityOpImpl = new SecurityOperationsImpl(clientContext);
 
 	}
+	
+	public JSONObject listUsers() {
+		JSONObject output = new JSONObject();
+		Set<String> users = new HashSet<String>();
+		int counter = 0;
+		
+			try {
+				users = securityOpImpl.listLocalUsers();
+				for (String string : users) {
+					counter++;
+					output.put(Integer.toString(counter), string);
+				}
+			} catch (AccumuloException e) {
+				try {
+					return output.put("error","Accumulo Exception: " + e.getMessage());
+				} catch (JSONException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				e.printStackTrace();
+			} catch (AccumuloSecurityException e) {
+				try {
+					return output.put("error","Accumulo Security Exception: " + e.getMessage());
+				} catch (JSONException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		
+		
+		return output;
+	}
 	@SuppressWarnings("deprecation")
 	public JSONObject addUser(String username, String password,List<ByteBuffer> labels) {
 
@@ -121,9 +157,24 @@ public class COMETAdminImpl implements COMETAdminIfce{
 	}
 
 	@Override
-	public String removeUser(String username) {
-		// TODO I am not sure I want to expose this method.
-		return null;
+	public JSONObject removeUser(String username) {
+		
+		JSONObject output = new JSONObject();
+		try {
+			securityOpImpl.dropUser(username);
+			output.put("user", username);
+		} catch (AccumuloException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (AccumuloSecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return output;
 	}
 
 	@SuppressWarnings("deprecation")

@@ -25,10 +25,11 @@
 package comet.accumulo.genc;
 
 import java.io.IOException;
-
+import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
@@ -36,6 +37,11 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
+import javax.json.JsonValue;
 
 import org.apache.accumulo.core.client.AccumuloException;
 import org.apache.accumulo.core.client.AccumuloSecurityException;
@@ -64,6 +70,7 @@ import org.apache.accumulo.core.security.ColumnVisibility;
 import org.apache.hadoop.io.Text;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
@@ -984,11 +991,31 @@ public class COMETGenCImpl implements COMETGenCIfce {
 			e.printStackTrace();
 		}
 
-		System.out.println("ABOUT TO CALL!");
+		COMETAdminImpl adminOps = new COMETAdminImpl("root", "accumuloAuth", cimpl.getConnector(), cimpl.clientConf);
+		String x= adminOps.listUsers().toString();
+		System.out.println(x);
+		JsonReader jsonr = Json.createReader(new StringReader(x));
+		JsonObject object = jsonr.readObject();
+		Collection<JsonValue> values = object.values();
+		for (JsonValue jsonValue : values) {
+			String theUser = jsonValue.toString();
+		//	System.out.println("jsonValue " + theUser );
+			if(theUser.contains("userdn")) 
+			{
+				
+				System.out.println(theUser);
+				System.out.println(theUser.charAt(0));
+			//	adminOps.removeUser("userdn-a7090740-89f4-4e32-a31c-a4f514e7c078");
+			} else {
+				System.out.println("NO CONTIENTE " + theUser);
+			}
+		}
 		
-		 cimpl.enumerateAllInTable("virtualsystems", "actor", "10");
+
+	//	 cimpl.enumerateAllInTable("virtualsystems", "actor", "10");
 			//	cimpl.enumerateScopes("pruth", "virtualsystems", "iaas", "a3d6e3fc-1fc1-497b-95bc-0e9bc8fea947", "secret");
 
+		
 				System.exit(1);
 		if(cimpl.validateReadScope("pruth", "virtualsystems", "iaas"))
 			System.out.println("TRUE");

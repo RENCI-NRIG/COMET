@@ -338,6 +338,40 @@ public class CometResource {
 	/**
 	 * Admin API POJO methods are below. We should consider to isolate them.
 	 */
+
+	@POST
+	@Path("removeuser")
+	@Produces(MediaType.APPLICATION_JSON)
+	public String remove(MultivaluedMap<String, String> formParams) {
+		JSONObject output;
+		username = formParams.getFirst("username"); //useradded
+		password = formParams.getFirst("password"); //password of new user
+		adminpass = formParams.getFirst("adminpass"); //accumulo root password
+
+	
+
+		if (username == null || adminpass == null) {
+			return "Error: Missing parameter.\n";
+		}
+		configFile = contextApp.getInitParameter("configfile");
+		COMETGenCImpl client = new COMETGenCImpl(configFile);
+		try {
+			client.init("root", adminpass);
+			COMETAdminImpl adminImpl = new COMETAdminImpl("root", adminpass, client.getConnector(), client.getClientConfig());
+			output = adminImpl.removeUser(username);
+
+		} catch (AccumuloException e) {
+			e.printStackTrace();
+			log.error(e.getMessage());
+			return (e.getMessage() + '\n');
+		} catch (AccumuloSecurityException e) {
+			log.error(e.getMessage());
+			return (e.getMessage() + '\n');
+		} 
+		return output.toString();
+
+	}
+	
 	@POST
 	@Path("adduser")
 	@Produces(MediaType.APPLICATION_JSON)

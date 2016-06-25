@@ -67,7 +67,7 @@ public interface COMETAdminIfce {
 	 * @param username
 	 * @return
 	 */
-	public String removeUser(String username);
+	public JSONObject removeUser(String username);
 	/**
 	 * Enumerate existing users in COMET. This only enumerate their usernames
 	 * @return
