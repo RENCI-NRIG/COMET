@@ -25,6 +25,7 @@
 package comet.accumulo.genc;
 
 import java.io.IOException;
+
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -38,6 +39,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.accumulo.core.client.AccumuloException;
 import org.apache.accumulo.core.client.AccumuloSecurityException;
+import org.apache.accumulo.core.client.BatchScanner;
 import org.apache.accumulo.core.client.BatchWriter;
 import org.apache.accumulo.core.client.BatchWriterConfig;
 import org.apache.accumulo.core.client.ClientConfiguration;
@@ -66,6 +68,13 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
 import comet.accumulo.genc.utils.COMETClientUtils;
+
+import org.apache.accumulo.core.data.Key;
+import org.apache.accumulo.core.data.Range;
+import org.apache.accumulo.core.data.Value;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Accumulo-specific implementation  of General Client Interface for COMET
@@ -210,8 +219,61 @@ public class COMETGenCImpl implements COMETGenCIfce {
 		}
 		return "Table contextType deleted: " + contextType + "\n";
 	}
+	
+	/**
+	 * TODO Change Scanner to BatchScanner to improve efficiency
+	 */
+	public JSONObject enumerateAllInTable(String contextType, String visibility, String numberOfThreads) {
 
-	@SuppressWarnings("deprecation")
+	
+		JSONObject output = new JSONObject();
+		Authorizations auth = null;
+		
+		if (visibility != null) {
+			auth = new Authorizations(visibility);
+		} else {
+			auth = new Authorizations();
+		}
+
+		try {
+			Scanner scan = cometConnector.createScanner(contextType, auth);
+			scan.setRange(new Range());
+
+			  Iterator<Map.Entry<Key,Value>> iterator = scan.iterator();
+			  
+			  while (iterator.hasNext()) {
+				 
+			   Map.Entry<Key,Value> entry = iterator.next();
+			   Key key2 = entry.getKey();
+			   Value value = entry.getValue();
+			   output.put(key2.toString(), value);
+			//   output.append(key2.toString(), value);
+			//  System.out.println(key2 + " ==> " + value);
+			  }
+
+		} catch (TableNotFoundException e) {
+			log.error("enumerateAll failed due to: " + e.getMessage());
+			try {
+				return output.put(ERROR, "Failed to delete entry due to " + e.getMessage());
+			} catch (JSONException e1) {
+				log.error("JSON Exception: " + e1.getMessage());
+			}
+
+		} catch (Exception e) {
+			log.error("enumerateAll failed due to: " + e.getMessage());
+			try {
+				return output.put(ERROR, "Failed to delete entry due to " + e.getMessage());
+			} catch (JSONException e1) {
+				log.error("JSON Exception: " + e1.getMessage());
+			}
+
+		}
+
+		
+		return output;
+	}
+	
+		@SuppressWarnings("deprecation")
 	public Set<String> enumarateUsers() {
 		Credentials credentials = new Credentials(root,new PasswordToken(rootPassword.getBytes()));
 
@@ -911,10 +973,11 @@ public class COMETGenCImpl implements COMETGenCIfce {
 		String scopevalue = UUID.randomUUID().toString();
 
 		COMETGenCImpl cimpl = new COMETGenCImpl(
-				"/Users/claris/Desktop/tomcat-ssl/cometserver/configFile");
+				"/Users/clariscastillo/Documents/development/comet/tomcat-ssl/configFile");
 
 		try {
 			cimpl.init("pruth", "pruthc4m2t");
+		//	cimpl.init("root", "accumuloAuth");
 
 		} catch (Exception e) {
 			log.error("Exception: "+e.getMessage());
@@ -922,9 +985,11 @@ public class COMETGenCImpl implements COMETGenCIfce {
 		}
 
 		System.out.println("ABOUT TO CALL!");
-		//		cimpl.enumerateScopes("pruth", "virtualsystems", "iaas", "a3d6e3fc-1fc1-497b-95bc-0e9bc8fea947", "actor");
+		
+		 cimpl.enumerateAllInTable("virtualsystems", "actor", "10");
+			//	cimpl.enumerateScopes("pruth", "virtualsystems", "iaas", "a3d6e3fc-1fc1-497b-95bc-0e9bc8fea947", "secret");
 
-		//		System.exit(1);
+				System.exit(1);
 		if(cimpl.validateReadScope("pruth", "virtualsystems", "iaas"))
 			System.out.println("TRUE");
 		else System.out.println("FALSE");

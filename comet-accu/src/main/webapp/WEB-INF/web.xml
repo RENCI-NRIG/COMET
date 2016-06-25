@@ -6,7 +6,7 @@
 
 	<context-param>
 		<param-name>configfile</param-name>
-		<param-value>/Users/claris/Desktop/tomcat-ssl/cometserver/configFile</param-value>
+		<param-value>/Users/clariscastillo/Documents/development/comet/tomcat-ssl/configFile</param-value>
 	</context-param>
 
 	<servlet>

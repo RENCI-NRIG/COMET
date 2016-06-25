@@ -1,5 +1,5 @@
 <html>
 <body>
-<h2>Hello COMET!</h2>
+<h2>Hello COMET Query Layer!</h2>
 </body>
 </html>

@@ -266,11 +266,78 @@ public class CometResource {
 
 	}
 
+	@POST
+	@Path("enumeratescopes")
+	@Produces(MediaType.APPLICATION_JSON)
+	public String enumerateScopes(MultivaluedMap<String, String> formParams) {
+		contextType = formParams.getFirst("contextType");
+		contextSubType = formParams.getFirst("contextSubType");
+		contextID = formParams.getFirst("contextID");
+		visibility = formParams.getFirst("visibility");
+		username = formParams.getFirst("username");
+		password = formParams.getFirst("password");
 
+		if (contextType == null || contextID == null || contextSubType == null
+				|| username == null || password == null || visibility == null) {
+			return "Error: Missing parameter.\n";
+		}
+
+		configFile = contextApp.getInitParameter("configfile");
+		COMETGenCImpl client = new COMETGenCImpl(configFile);
+		try {
+			client.init(username, password);
+		} catch (AccumuloException e) {
+			e.printStackTrace();
+			log.error(e.getMessage());
+			return (e.getMessage() + '\n');
+		} catch (AccumuloSecurityException e) {
+			log.error(e.getMessage());
+			return (e.getMessage() + '\n');
+		} 
+
+		JSONObject output = client.enumerateScopes(username, contextType, contextSubType, contextID, visibility);
+		
+		return output.toString();
+
+
+	}
+
+	@POST
+	@Path("enumerateall")
+	@Produces(MediaType.APPLICATION_JSON)
+	public String enumerateAll(MultivaluedMap<String, String> formParams) {
+		contextType = formParams.getFirst("contextType");
+		visibility = formParams.getFirst("visibility");
+		username = formParams.getFirst("username");
+		password = formParams.getFirst("password");
+
+		if (contextType == null || username == null || password == null || visibility == null) {
+			return "Error: Missing parameter.\n";
+		}
+
+		configFile = contextApp.getInitParameter("configfile");
+		COMETGenCImpl client = new COMETGenCImpl(configFile);
+		try {
+			client.init(username, password);
+		} catch (AccumuloException e) {
+			e.printStackTrace();
+			log.error(e.getMessage());
+			return (e.getMessage() + '\n');
+		} catch (AccumuloSecurityException e) {
+			log.error(e.getMessage());
+			return (e.getMessage() + '\n');
+		} 
+
+		JSONObject output = client.enumerateAllInTable(contextType, visibility, Integer.toString(10));
+		
+		System.out.println(output.toString());
+		return output.toString();
+
+
+	}
 	/**
 	 * Admin API POJO methods are below. We should consider to isolate them.
 	 */
-
 	@POST
 	@Path("adduser")
 	@Produces(MediaType.APPLICATION_JSON)
