@@ -43,6 +43,7 @@ import org.apache.accumulo.core.client.impl.Credentials;
 import org.apache.accumulo.core.client.impl.SecurityOperationsImpl;
 import org.apache.accumulo.core.client.security.tokens.PasswordToken;
 import org.apache.accumulo.core.security.Authorizations;
+import org.apache.accumulo.core.security.TablePermission;
 import org.apache.log4j.Logger;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
@@ -320,6 +321,18 @@ public class COMETAdminImpl implements COMETAdminIfce{
 	@Override
 	public String grantTablePermission(String tableName, String username,
 			String permission) {
+		
+		try {
+			securityOpImpl.grantTablePermission(username, tableName, TablePermission.WRITE);
+			securityOpImpl.grantTablePermission(username, tableName, TablePermission.READ);
+			securityOpImpl.grantTablePermission(username, tableName, TablePermission.BULK_IMPORT);
+		} catch (AccumuloException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (AccumuloSecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -666,9 +666,11 @@ public class COMETGenCImpl implements COMETGenCIfce {
 
 		/*if it is a new slice, add a new user */
 		if(contextType.equalsIgnoreCase(sliceTable)) {
-			addUser("userdn-"+ contextID, "password", new Authorizations(contextID));
+			String username = "userdn-"+contextID;
+			addUser(username, "password", new Authorizations(contextID));
+			COMETAdminImpl adminOps = new COMETAdminImpl(root, rootPassword, cometConnector, clientConf);
+			adminOps.grantTablePermission(sliceTable, username,null);
 		}
-
 
 		try {
 
@@ -993,7 +995,7 @@ public class COMETGenCImpl implements COMETGenCIfce {
 
 		COMETAdminImpl adminOps = new COMETAdminImpl("root", "accumuloAuth", cimpl.getConnector(), cimpl.clientConf);
 		String x= adminOps.listUsers().toString();
-		System.out.println(x);
+	
 		JsonReader jsonr = Json.createReader(new StringReader(x));
 		JsonObject object = jsonr.readObject();
 		Collection<JsonValue> values = object.values();
@@ -1001,8 +1003,7 @@ public class COMETGenCImpl implements COMETGenCIfce {
 			String theUser = jsonValue.toString();
 		//	System.out.println("jsonValue " + theUser );
 			if(theUser.contains("userdn")) 
-			{
-				
+			{	
 				System.out.println(theUser);
 				System.out.println(theUser.charAt(0));
 			//	adminOps.removeUser("userdn-a7090740-89f4-4e32-a31c-a4f514e7c078");
