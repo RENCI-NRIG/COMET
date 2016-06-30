@@ -66,9 +66,11 @@ Similar for ‘reservation-owner’ attribute and reservation.user context
 
 
 ### Createscope
+
 curl -k  -E /Users/charlie/curlcert.pfx:password https://hostname:8443/comet-accu/rest/comet/createscope  --data "contextType=reservations&contextSubType=iaas&scopeName=scopeName&scopeValue=scopeValue&visibility=secret&username=charlie&password=mypass&contextID=contextID"
 
 ### Readscope
+
 curl -k -E /Users/charlie/curlcert.pfx:password https://hostname:8443/comet-accu/rest/comet/readscope --data "contextType=reservations&contextSubType=iaas&scopeName=${scopeName}&visibility=secret&username=charlie&password=mypass"
 
 ### Updatescope
@@ -76,9 +78,11 @@ curl -k -E /Users/charlie/curlcert.pfx:password https://hostname:8443/comet-accu
 curl -k -E /Users/charlie/curlcert.pfx:password https://hostname:8443/comet-accu/rest/comet/modifyscope --data "contextType=reservations&contextSubType=iaas&scopeValue=scopeValue&scopeName=scopeName&username=charlie&password=mypass&visibility=secret&contextID=contextID"
 
 ### Destroyscope
+
 curl -k -E /Users/charlie/curlcert.pfx:password https://hostname:8443/comet-accu/rest/comet/destroyscope --data "contextType=virtualsystems&contextID=contextID&scopeName=scopeName&username=charlie&password=mypass&contextSubType=iaas&visibility=secret"
 
 ### Enumeratescopes
+
 curl -k -E /Users/charlie/curlcert.pfx:password https://hostname:8443/comet-accu/rest/comet/enumeratescopes --data
 "contextType=virtualsystems&contextID=contextID&username=charlie&password=mypass&contextSubType=iaas&visibility=secret"
 
