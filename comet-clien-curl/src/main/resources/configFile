@@ -1,0 +1,16 @@
+#Only JKS keystore and truststore are supported at the moment
+comet.client.keystore=/Users/clariscastillo/Documents/development/comet/client-ssl/keystore.jks
+comet.client.truststore=/Users/clariscastillo/Documents/development/comet/client-ssl/keystore.jks
+comet.client.keystore.pass=password
+comet.client.truststore.pass=password
+comet.service.uri.base=https://cometmaster.renci.org:8443/comet-accu/rest/
+comet.service.rsrce.create=comet/createscope
+comet.service.rsrce.destroy=comet/destroyscope
+comet.service.rsrce.update=comet/modifyscope
+comet.service.rsrce.read=comet/readscope
+comet.service.rsrce.enum=comet/enumeratescope
+#Username and password for accumulo user. These parameters are passed to COMET through Restful API.
+comet.client.accumulo.username=pruth
+comet.client.accumulo.password=pruthc4m2t
+
+			
