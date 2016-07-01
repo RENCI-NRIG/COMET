@@ -10,7 +10,15 @@ comet.service.rsrce.update=comet/modifyscope
 comet.service.rsrce.read=comet/readscope
 comet.service.rsrce.enum=comet/enumeratescope
 #Username and password for accumulo user. These parameters are passed to COMET through Restful API.
-comet.client.accumulo.username=
+comet.client.accumulo.username=pruth
 comet.client.accumulo.password=
+
+#logging configuration
+log4j.appender.STDOUT=org.apache.log4j.ConsoleAppender
+log4j.appender.STDOUT.layout=org.apache.log4j.PatternLayout
+log4j.appender.STDOUT.layout.ConversionPattern=%d %p [%t] %C{1} - %m\n
+
+# use the STDOUT appender. set the level to INFO.
+log4j.logger.comet.client.cometClientCurl=DEBUG, STDOUT
 
 			

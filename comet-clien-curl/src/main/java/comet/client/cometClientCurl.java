@@ -32,7 +32,10 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
+import java.util.List;
+import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.KeyManagerFactory;
@@ -45,7 +48,11 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
+
+
 
 /**
  * A java-based Restful COMET client written in Jersey
@@ -55,7 +62,7 @@ import org.apache.log4j.Logger;
 public class cometClientCurl {
 	
 	private static final Logger log = Logger.getLogger(cometClientCurl.class);
-
+	
 	String keyStorePath;
 	String keyStorePass;
 	String trustStorePath;
@@ -64,6 +71,8 @@ public class cometClientCurl {
 	WebTarget webTarget;
 	String accumulo_username;
 	String accumulo_password;
+	String configFilePath;
+	Properties props;
 	/**
 	 * Configuration file contains all the parameters required to configure SSL, 
 	 * authenticate with COMET and access web resources in COMET
@@ -72,7 +81,14 @@ public class cometClientCurl {
 	 * @param ConfigFile
 	 */
 	public cometClientCurl(String ConfigFile) {
-		Properties props = new Properties();
+		configFilePath = ConfigFile;
+		
+		//Configuring the logger
+		PropertyConfigurator.configure(configFilePath);
+		log.info("Logging initialized." + log.getName());	
+		System.out.println("Logging initialized " + log.getName());
+		
+		props = new Properties();
 		try {
 			props.load(new FileInputStream(ConfigFile));
 			keyStorePath = props.getProperty(cometClientPropsKeys.COMET_CLIENT_KEYSTORE_PROP);
@@ -88,30 +104,38 @@ public class cometClientCurl {
 				throw new Exception("Missing property in configuration file");
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error("Unable to read properties from configuration file: " + e.getMessage());
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+			log.error("Missing property: " + e.getMessage());
+		} 
 		
+		//Initialized SSL
 		init();
 		
 	}
 	private void  init() {
+		
 		KeyStore keyStore; 
 		InputStream is;
 		KeyManagerFactory keyManagerFactory=null;
+		
+		
 		try {
-			keyStore= KeyStore.getInstance("JKS");
-			is = new FileInputStream(keyStorePath);
-			keyStore.load(is, keyStorePass.toCharArray());
-			is.close();
+			keyStore= KeyStore.getInstance("JKS"); // We only support JKS at the moment.
+			try 
+			{
+				is = new FileInputStream(keyStorePath);
+				keyStore.load(is, keyStorePass.toCharArray());
+				is.close();
+			} catch (IOException e) {
+				log.error("IO Exception on keystore file: " + e.getMessage());
+			}
+			
 			
 			keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
 			keyManagerFactory.init(keyStore, keyStorePass.toCharArray());
-		} catch (NoSuchAlgorithmException | CertificateException | IOException | UnrecoverableKeyException | KeyStoreException e1) {
-			// TODO Auto-generated catch block
+		} catch (NoSuchAlgorithmException | CertificateException | UnrecoverableKeyException | KeyStoreException e1) {
+			log.error("Unable to create KeyManager " + e1.getMessage());
 			e1.printStackTrace();
 		}
 
@@ -125,11 +149,10 @@ public class cometClientCurl {
 			allHostsValid = new InsecureHostnameVerifier();
 
 		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error("NoSuchAlgorithm Exception " + e.getMessage());
 		}
 		catch (KeyManagementException e) {
-			// TODO Auto-generated catch block
+			log.error("KeyManagement Exception " + e.getMessage());
 			e.printStackTrace();
 		}
 		Client client = ClientBuilder.newBuilder().sslContext(sc).hostnameVerifier(allHostsValid).build();
@@ -151,11 +174,34 @@ public class cometClientCurl {
 		
 		parameters.add("username", this.accumulo_username);
 		parameters.add("password", this.accumulo_password);
-		String response = webTarget.path("comet/createscope")
+		String response = webTarget.path(resourcePath)
 				.request()
 				.post(Entity.form(parameters),String.class);
 		
-		System.out.println("Response: " + response);
+		log.debug("Resource called: "+ resourcePath);
+		if(log.getLevel().toInt() <= org.apache.log4j.Level.DEBUG_INT) {
+			
+			Set<Entry<Object,Object>> propSet = props.entrySet();
+			for (Entry<Object, Object> entry : propSet) {
+				log.debug(entry.getKey()+","+entry.getValue());
+			}
+			
+			log.debug("==============Input paramters to restful API==================");
+			Set<Entry<String,List<String>>> set = parameters.entrySet();
+			
+			for (Entry<String, List<String>> entry : set) {
+				if(entry.getKey().contains("password")) {
+					log.debug("password,xxxxx");
+					continue;
+				}
+				int size = entry.getValue().size();
+				for(int i = 0; i< size ; i++) {
+					log.debug(entry.getKey() + "," + entry.getValue().get(i));
+				}
+			}
+		}
+		log.debug("Response: " + response);
+		System.out.println("Response " + response);
 		return response;
 	}
 	public static void main (String [] strs) {
@@ -166,7 +212,7 @@ public class cometClientCurl {
 		map.add("contextSubType","iaas");
 		map.add("scopeName", "myscopename");
 		map.add("visibility", "actor");
-		map.add("contextID","mycontextidnxxnxxx");
+		map.add("contextID","mycontextENGLAND334455");
 		map.add("scopeValue", "myscopevalue");
 	
 
